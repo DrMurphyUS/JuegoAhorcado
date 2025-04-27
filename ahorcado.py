@@ -3,47 +3,45 @@ import os
 def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def mostrar_estado(palabra_secreta, letras_adivinadas):
-    estado = ""
-    for letra in palabra_secreta:
-        if letra in letras_adivinadas:
-            estado += letra + " "
-        else:
-            estado += "_ "
-    return estado.strip()
+def mostrar_estado(palabra, letras):
+    return ' '.join([letra if letra in letras else '_' for letra in palabra])
 
 def juego_ahorcado():
     limpiar_pantalla()
-    palabra_secreta = input("Jugador 1, ingresa la palabra secreta: ").lower()
+    palabra = input("Jugador 1, ingresa la palabra secreta: ").strip().lower()
     limpiar_pantalla()
 
-    letras_adivinadas = []
-    intentos_restantes = 6
+    letras_adivinadas = set()
+    intentos = 6
 
     print("¡Comienza el juego del ahorcado!")
-    
-    while intentos_restantes > 0:
-        estado_actual = mostrar_estado(palabra_secreta, letras_adivinadas)
-        print("\nPalabra: " + estado_actual)
-        print(f"Intentos restantes: {intentos_restantes}")
-        
-        if "_" not in estado_actual:
-            print("\n¡Felicidades! Has adivinado la palabra.")
-            break
 
-        intento = input("Adivina una letra: ").lower()
+    while intentos > 0:
+        estado = mostrar_estado(palabra, letras_adivinadas)
+        print(f"\nPalabra: {estado}")
+        print(f"Intentos restantes: {intentos}")
 
-        if intento in letras_adivinadas:
-            print("Ya has adivinado esa letra.")
-        elif intento in palabra_secreta:
-            letras_adivinadas.append(intento)
-            print("¡Bien hecho!")
+        if "_" not in estado:
+            print("\n¡Felicidades! Adivinaste la palabra.")
+            return
+
+        letra = input("Adivina una letra: ").strip().lower()
+
+        if not letra.isalpha() or len(letra) != 1:
+            print("Ingresa solo una letra válida.")
+            continue
+
+        if letra in letras_adivinadas:
+            print("Ya adivinaste esa letra.")
+        elif letra in palabra:
+            letras_adivinadas.add(letra)
+            print("¡Correcto!")
         else:
-            letras_adivinadas.append(intento)
-            intentos_restantes -= 1
+            letras_adivinadas.add(letra)
+            intentos -= 1
             print("Letra incorrecta.")
 
-    else:
-        print(f"\n¡Perdiste! La palabra secreta era: {palabra_secreta}")
+    print(f"\n¡Perdiste! La palabra era: {palabra}")
 
-juego_ahorcado()
+if __name__ == "__main__":
+    juego_ahorcado()
