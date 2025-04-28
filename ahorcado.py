@@ -1,10 +1,23 @@
 import os
 
 def limpiar_pantalla():
+    """Limpia la pantalla según el sistema operativo."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def mostrar_estado(palabra, letras):
-    return ' '.join([letra if letra in letras else '_' for letra in palabra])
+def mostrar_estado(palabra, letras_adivinadas):
+    """Retorna la palabra con las letras adivinadas y guiones bajos para las no adivinadas."""
+    return ' '.join(letra if letra in letras_adivinadas else '_' for letra in palabra)
+
+def solicitar_letra(letras_adivinadas):
+    """Solicita al jugador una letra válida que no haya sido usada antes."""
+    while True:
+        letra = input("Adivina una letra: ").strip().lower()
+        if len(letra) != 1 or not letra.isalpha():
+            print("Debes ingresar solo una letra del alfabeto.")
+        elif letra in letras_adivinadas:
+            print("Ya adivinaste esa letra.")
+        else:
+            return letra
 
 def juego_ahorcado():
     limpiar_pantalla()
@@ -23,17 +36,11 @@ def juego_ahorcado():
 
         if "_" not in estado:
             print("\n¡Felicidades! Adivinaste la palabra.")
-            return
+            break
 
-        letra = input("Adivina una letra: ").strip().lower()
+        letra = solicitar_letra(letras_adivinadas)
 
-        if not letra.isalpha() or len(letra) != 1:
-            print("Ingresa solo una letra válida.")
-            continue
-
-        if letra in letras_adivinadas:
-            print("Ya adivinaste esa letra.")
-        elif letra in palabra:
+        if letra in palabra:
             letras_adivinadas.add(letra)
             print("¡Correcto!")
         else:
@@ -41,7 +48,8 @@ def juego_ahorcado():
             intentos -= 1
             print("Letra incorrecta.")
 
-    print(f"\n¡Perdiste! La palabra era: {palabra}")
+    if intentos == 0:
+        print(f"\n¡Perdiste! La palabra era: {palabra}")
 
 if __name__ == "__main__":
     juego_ahorcado()
